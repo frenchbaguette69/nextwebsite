@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { HiMenu, HiX } from "react-icons/hi";
 
 const transition = {
   type: "spring",
@@ -15,6 +16,8 @@ const transition = {
 
 export default function Navbar() {
   const [active, setActive] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSub, setMobileSub] = useState<string | null>(null);
 
   const navItems = [
     {
@@ -26,7 +29,6 @@ export default function Navbar() {
         { name: "Design op maat", href: "/maatwerk" },
         { name: "Webshop laten maken", href: "/webshop-laten-maken" },
       ],
-      image: "/images/website.jpg",
     },
     {
       title: "SEO hoger in Google",
@@ -36,7 +38,6 @@ export default function Navbar() {
         { name: "Technische SEO", href: "/seo-technisch" },
         { name: "Lokale SEO", href: "/seo-lokaal" },
       ],
-      image: "/images/seo.jpg",
     },
     {
       title: "Adverteren",
@@ -46,7 +47,6 @@ export default function Navbar() {
         { name: "Facebook Ads", href: "/facebook-ads" },
         { name: "Instagram Ads", href: "/instagram-ads" },
       ],
-      image: "/images/ads.jpg",
     },
   ];
 
@@ -57,6 +57,7 @@ export default function Navbar() {
           <Image src="/nextwebsitelogo.png" alt="Logo" width={100} height={40} />
         </Link>
 
+        {/* Desktop nav */}
         <div
           className="hidden lg:flex items-center gap-8 relative"
           onMouseLeave={() => setActive(null)}
@@ -84,7 +85,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
                     transition={transition}
-                    className="absolute top-full left-1/2 -translate-x-1/2 w-[720px] max-w-[95vw] bg-white shadow-xl rounded-xl p-6 grid grid-cols-2 gap-6 z-50"
+                    className="absolute left-1/2 top-[calc(100%+0.6rem)] -translate-x-1/2 transform pt-4 w-[720px] max-w-[95vw] bg-white shadow-xl rounded-xl p-6 grid grid-cols-2 gap-6 z-50"
                   >
                     <div>
                       <h3 className="text-sm font-medium mb-2 leading-[1.75rem]">
@@ -106,15 +107,6 @@ export default function Navbar() {
                         Gratis offerte
                       </Link>
                     </div>
-                    <div>
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={300}
-                        height={200}
-                        className="rounded-md object-cover w-full h-auto"
-                      />
-                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -129,6 +121,7 @@ export default function Navbar() {
           </Link>
         </div>
 
+        {/* Desktop CTA */}
         <div className="hidden lg:block">
           <Link
             href="/gratis-offerte"
@@ -138,13 +131,65 @@ export default function Navbar() {
           </Link>
         </div>
 
+        {/* Mobile menu toggle */}
         <button
-          className="lg:hidden"
-          onClick={() => setActive((prev) => (prev === "mobile" ? null : "mobile"))}
+          className="lg:hidden text-3xl"
+          onClick={() => setMobileOpen((prev) => !prev)}
         >
-          {active === "mobile" ? <span>X</span> : <span>=</span>}
+          {mobileOpen ? <HiX /> : <HiMenu />}
         </button>
       </nav>
+
+      {/* Mobile nav */}
+      {mobileOpen && (
+        <div className="lg:hidden px-4 pb-4">
+          <div className="space-y-4">
+            {navItems.map((item) => (
+              <div key={item.title}>
+                <button
+                  onClick={() =>
+                    setMobileSub((prev) => (prev === item.title ? null : item.title))
+                  }
+                  className="flex items-center justify-between w-full font-medium text-left"
+                >
+                  {item.title}
+                  <ChevronDown
+                    size={18}
+                    className={`transition-transform ${
+                      mobileSub === item.title ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {mobileSub === item.title && (
+                  <div className="mt-2 rounded-md bg-white p-4">
+                    {item.links.map((link) => (
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        className="block py-1 text-sm text-[#0a2e2d] hover:underline"
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            <Link
+              href="/portfolio"
+              className="block bg-[#eefce9] px-4 py-2 rounded-md text-[#0a2e2d] text-sm font-medium"
+            >
+              Portfolio
+            </Link>
+            <Link
+              href="/gratis-offerte"
+              className="block bg-[#c5eec8] px-4 py-2 rounded-md text-[#0a2e2d] text-sm font-medium"
+            >
+              Gratis offerte
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
