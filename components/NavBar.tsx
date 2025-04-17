@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,20 @@ const transition = {
   stiffness: 100,
 };
 
+
 export default function Navbar() {
+
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+useEffect(() => {
+  const handleScroll = () => {
+    setHasScrolled(window.scrollY > 10);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []); 
+
   const [active, setActive] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSub, setMobileSub] = useState<string | null>(null);
@@ -51,8 +64,12 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="bg-[#d3f9d8] text-[#0a2e2d] relative z-50">
-      <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header
+  className={`sticky top-0 w-full z-50 transition-shadow bg-[#d3f9d8] text-[#0a2e2d] ${
+    hasScrolled ? "shadow-md" : ""
+  }`}
+>
+      <nav className="container mx-auto max-w-7xl px-4 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold tracking-tight">
           <Image src="/nextwebsitelogo.png" alt="Logo" width={100} height={40} />
         </Link>
@@ -183,7 +200,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/gratis-offerte"
-              className="block bg-[#c5eec8] px-4 py-2 rounded-md text-[#0a2e2d] text-sm font-medium"
+              className="block bg-[#012D2E] px-4 py-2 rounded-md text-white text-sm font-medium"
             >
               Gratis offerte
             </Link>
